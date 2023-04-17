@@ -13,7 +13,7 @@ export default function Signup() {
 
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
-	const [name, setName] = useState("")
+	const [username, setUsername] = useState("")
 	// const {signup, isPending, error} = useSignup()
 
 	const {user, setUser} = UserState();
@@ -25,27 +25,29 @@ export default function Signup() {
 
 		try {
 
-			if(!email || !password || !name){
+			if(!email || !password || !username){
 				throw new Error("Please fill all the fields.");
 			}
 
-			const res = await fetch("/register", {
+			const res = await fetch("/api/register", {
 
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"
 				},
 				body: JSON.stringify({
-					email, password, name
+					email, password, username
 				})
 
 			})
 
 			const data = await res.json();
 
+			console.log(res);
 
-			if (res.status === 422 || !data) {
-				throw new Error("Error occurred.");
+
+			if (res.status === 400 || !data) {
+				throw new Error("username / email already exists.");
 			}
 			else {
 				localStorage.setItem("userInfo", JSON.stringify(data));
@@ -57,6 +59,7 @@ export default function Signup() {
 			}
 		} catch (err) {
 			// window.alert(err);
+
 			toast.error(err.message , {
 				position: "top-center",
 				autoClose: 2000,
@@ -78,12 +81,12 @@ export default function Signup() {
 			<ToastContainer />
 
 			<label>
-				<span>Name:</span>
+				<span>Username:</span>
 				<input
 					required
 					type="text"
-					onChange={(e) => setName(e.target.value)}
-					value={name}
+					onChange={(e) => setUsername(e.target.value)}
+					value={username}
 				/>
 			</label>
 

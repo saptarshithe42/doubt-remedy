@@ -9,7 +9,7 @@ function Userdata() {
   return (
     <div>
         {!user && <h1>Hello User</h1>}
-        {user && <h1>Hello {user.name}</h1>}
+        {user && <h1>Hello {user.username}</h1>}
 
     </div>
   )

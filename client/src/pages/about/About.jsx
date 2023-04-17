@@ -50,20 +50,20 @@ function About() {
 	// }, [])
 
 	const {user} = UserState();
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 
-	useEffect(() => {
-		if(!user){
-			navigate("/login");
-		}
-	}, [user])
+	// useEffect(() => {
+	// 	if(!user){
+	// 		navigate("/login");
+	// 	}
+	// }, [user])
 
 
 	return (
 		<div>
 			{user &&
 			 <div>
-				{user.name}
+				{user.username}
 				{user.email}
 			</div>}
 		</div>

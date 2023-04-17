@@ -19,7 +19,9 @@ const Routing = () => {
 	return (
 		<Routes>
 			<Route path="/" element={<Home />} />
-			<Route path="/about" element={<About />} />
+			{/* <Route path="/about" element={<About />} /> */}
+			{user && <Route path="/about" element={<About />} />}
+			{/* <Route path="/about" element={!user ? <Navigate to="/login" /> : <About />} /> */}
 			{/* <Route path="/login" element={<Login />} /> */}
 			<Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
 			<Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" />} />

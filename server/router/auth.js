@@ -6,7 +6,8 @@ const Authenticate = require("../middleware/authenticate");
 const cookieParser = require("cookie-parser");
 
 require("../db/conn")
-const User = require("../models/userSchema")
+const User = require("../models/userSchema");
+const Question = require("../models/questionSchema");
 
 router.use(cookieParser());
 
@@ -14,56 +15,31 @@ router.get("/", (req, res) => {
     res.send("Hello World from router!")
 });
 
-/*
-// handling promises with .then, .catch
-router.post("/register", (req, res) => {
-
-    const {name, email, password} = req.body
-
-    if(!name || !email || !password){
-        return res.status(422).json({error : "Please fill all fields"})
-    }
-
-
-    User.findOne({email : email})
-    .then((userExists) => {
-        if(userExists){
-            return res.status(422).json({error : "Email already exists."})
-        }
-
-        const user = new User({name, email, password});
-
-        user.save().then(() => {
-            res.status(201).json({message : "user registered successfully"})
-        }).catch((err) => {
-            res.status(500).json({error : "failed to register"})
-        })
-    }).catch((err) => {
-        console.log(err);
-    })
-
-})
-*/
-
-
 // handling promises with async/await
-router.post("/register", async (req, res) => {
+router.post("/api/register", async (req, res) => {
 
-    const { name, email, password } = req.body
+    const { username, email, password } = req.body
 
-    if (!name || !email || !password) {
-        return res.status(422).json({ error: "Please fill all fields" })
+    if (!username || !email || !password) {
+        return res.status(400).json({ error: "Please fill all fields" })
     }
 
     try {
+        const usernameExists = await User.findOne({username : username});
+
+        if(usernameExists){
+            return res.status(400).json({ error: "username already exists." });
+        }
+
+
         const userExists = await User.findOne({ email: email });
 
 
         if (userExists) {
-            return res.status(422).json({ error: "Email already exists." });
+            return res.status(400).json({ error: "Email already exists." });
         }
 
-        const user = new User({ name, email, password });
+        const user = new User({ username, email, password });
 
         // pre-save middleware in between
         await user.save();
@@ -73,7 +49,7 @@ router.post("/register", async (req, res) => {
         res.status(201).json({ 
             _id : user._id,
             email : user.email,
-            name : user.name,
+            username : user.username,
             token : user.generateAuthToken()
          });
 
@@ -85,7 +61,7 @@ router.post("/register", async (req, res) => {
 
 
 // login route
-router.post("/signin", async (req, res) => {
+router.post("/api/signin", async (req, res) => {
 
     try {
         const { email, password } = req.body;
@@ -117,7 +93,7 @@ router.post("/signin", async (req, res) => {
             res.status(200).json({ 
                 _id : user._id,
                 email : user.email,
-                name : user.name,
+                username : user.username,
                 token : token
              });
 
@@ -132,25 +108,42 @@ router.post("/signin", async (req, res) => {
 });
 
 
-router.get("/about", Authenticate, (req, res) => {
+router.get("/api/about", Authenticate, (req, res) => {
     console.log("Hello About page!");
     res.send(req.rootUser);
 });
 
 
-router.get("/getdata", Authenticate, (req, res) => {
+router.get("/api/getdata", Authenticate, (req, res) => {
     // console.log("Hello About page!");
     res.send(req.rootUser);
 });
 
 
-router.get("/logout", (req, res) => {
+router.get("/api/logout", (req, res) => {
   
     res.clearCookie("jwtoken", {path : "/"});
     res.status(200).send("user logged out");
 });
 
 
+
+router.post("/api/submitQuestion", async (req, res) => {
+
+    try{
+
+        const question = new Question(req.body);
+    
+        await question.save();
+
+        res.status(200).json({message : "Submitted question successfully"});
+
+    } catch(err){
+
+        res.status(400).json({error : "Could not submit question"});
+
+    }
+});
 
 
 module.exports = router;

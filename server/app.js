@@ -40,13 +40,13 @@ const PORT = process.env.PORT;
 
 
 
-app.get("/signin", (req, res) => {
-    res.send("Hello sign in World!")
-})
+// app.get("/signin", (req, res) => {
+//     res.send("Hello sign in World!")
+// })
 
-app.get("/signup", (req, res) => {
-    res.send("Hello signup World!")
-})
+// app.get("/signup", (req, res) => {
+//     res.send("Hello signup World!")
+// })
 
 
 // starting the server

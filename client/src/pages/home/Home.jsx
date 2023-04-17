@@ -36,7 +36,7 @@ function Home() {
 		<div>
 			<h1>Welcome</h1>
 			{user && 
-			<h3>{user.name}</h3>}
+			<h3>{user.username}</h3>}
 		</div>
 	)
 }

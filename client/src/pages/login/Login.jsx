@@ -34,7 +34,7 @@ export default function Login() {
 				throw new Error("Please fill all the fields.");
 			}
 
-			const res = await fetch("/signin", {
+			const res = await fetch("/api/signin", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"

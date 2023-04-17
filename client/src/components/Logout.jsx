@@ -12,7 +12,7 @@ function Logout() {
 
 	// doing by promises this time
 	useEffect(() => {
-		fetch("/logout", {
+		fetch("/api/logout", {
 			method: "GET",
 			headers: {
 				Accept: "application/json",
