@@ -22,7 +22,20 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
-    }
+    },
+
+    points : {
+        type : Number,
+        min : 0,
+        default : 100
+    },
+
+    // contains IDs of questions asked
+    askedQuestions : [String],
+
+    // contains IDs of questions answered
+    answeredQuestions : [String]
+
 })
 
 

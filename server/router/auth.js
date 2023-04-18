@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 require("../db/conn")
 const User = require("../models/userSchema");
 const Question = require("../models/questionSchema");
+const Answer = require("../models/answerSchema");
 
 router.use(cookieParser());
 
@@ -25,9 +26,9 @@ router.post("/api/register", async (req, res) => {
     }
 
     try {
-        const usernameExists = await User.findOne({username : username});
+        const usernameExists = await User.findOne({ username: username });
 
-        if(usernameExists){
+        if (usernameExists) {
             return res.status(400).json({ error: "username already exists." });
         }
 
@@ -46,12 +47,12 @@ router.post("/api/register", async (req, res) => {
 
         // res.status(201).json({ message: "user registered successfully" });
 
-        res.status(201).json({ 
-            _id : user._id,
-            email : user.email,
-            username : user.username,
-            token : user.generateAuthToken()
-         });
+        res.status(201).json({
+            _id: user._id,
+            email: user.email,
+            username: user.username,
+            token: user.generateAuthToken()
+        });
 
     } catch (error) {
         console.log(error);
@@ -83,19 +84,19 @@ router.post("/api/signin", async (req, res) => {
             console.log(token);
 
             res.cookie("jwtoken", token, {
-                expires : new Date(Date.now() + 2589200000),
-                httpOnly : true
+                expires: new Date(Date.now() + 2589200000),
+                httpOnly: true
             });
 
             // token expires after 30 days
             // res.status(200).json({ message: "sign in successful" });
 
-            res.status(200).json({ 
-                _id : user._id,
-                email : user.email,
-                username : user.username,
-                token : token
-             });
+            res.status(200).json({
+                _id: user._id,
+                email: user.email,
+                username: user.username,
+                token: token
+            });
 
         } else {
             res.status(400).json({ error: "Invalid credentials" });
@@ -121,29 +122,148 @@ router.get("/api/getdata", Authenticate, (req, res) => {
 
 
 router.get("/api/logout", (req, res) => {
-  
-    res.clearCookie("jwtoken", {path : "/"});
+
+    res.clearCookie("jwtoken", { path: "/" });
     res.status(200).send("user logged out");
 });
 
 
-
+// submit question
 router.post("/api/submitQuestion", async (req, res) => {
 
-    try{
+    try {
 
+        // save question in database
         const question = new Question(req.body);
-    
         await question.save();
 
-        res.status(200).json({message : "Submitted question successfully"});
+        // add currently asked question's ID in user's askedQuestions array
+        const filter = { _id: question.askedBy }
+        const updateObject = {
+            $push: { askedQuestions: question._id },
+            $inc: { points: -(question.points) }
+        }
 
-    } catch(err){
+        await User.updateOne(filter, updateObject);
 
-        res.status(400).json({error : "Could not submit question"});
+        res.status(200).json({ message: "Submitted question successfully" });
+
+    } catch (err) {
+
+        res.status(400).json({ error: "Could not submit question" });
 
     }
 });
+
+
+// submit answer
+router.post("/api/submitAnswer/", async (req, res) => {
+
+    try {
+
+        // save answer in database
+        const answer = new Answer(req.body);
+        await answer.save();
+
+        const questionID = answer.questionID;
+
+        // add currently answered question's ID in user's answeredQuestions array
+        let filter = { _id: answer.answeredBy };
+        let updateObject = {
+            $push: { answeredQuestions: questionID },
+            $inc: { points: answer.points }
+        }
+
+        await User.updateOne(filter, updateObject);
+
+        // add the answer ID in question's answer array
+        filter = { _id: questionID };
+        updateObject = {
+            $push: { answers: answer._id }
+        }
+        await Question.updateOne(filter, updateObject);
+
+        res.status(200).json({ message: "Submitted answer successfully" });
+
+    } catch (err) {
+
+        res.status(400).json({ error: "Could not submit answer" });
+
+    }
+});
+
+
+// to delete answer with given ID
+router.delete("/api/deleteAnswer/:id", async (req, res) => {
+
+    try {
+
+        const answerID = req.params.id;
+        const answer = await Answer.findById(answerID);
+        const userID = answer.answeredBy;
+        const questionID = answer.questionID;
+
+        // decrement points of user and delete the answer ID from user's answeredQuestions array
+        let filter = { _id: userID }
+        let updateObject = {
+            $pull: { answeredQuestions: questionID },
+            $inc: { points: -(answer.points) }
+        }
+
+        await answer.deleteOne();
+        await User.updateOne(filter, updateObject);
+
+        filter = { _id : questionID }
+        updateObject = {
+            $pull: { answers : answerID }
+        }
+        await Question.updateOne(filter, updateObject);
+
+
+        res.status(200).json({ message: "Deleted answer successfully" });
+
+    } catch (err) {
+
+        console.log(err);
+        res.status(400).json({ error: "Could not delete answer" });
+    }
+
+})
+
+// fetch questions
+router.get("/api/questions/:skip/:limit", async (req, res) => {
+
+    try{
+
+        
+
+    } catch(err){
+        res.status(400).json({ error: "Could not fetch questions" });
+    }
+
+})
+
+// fetch question with given ID
+router.get("/api/question/:id", async (req, res) => {
+
+    try{
+
+        const questionID = req.params.id;
+        const question = await Question.findById(questionID);
+
+        // console.log(question);
+
+        if(!question) {
+            throw new Error("Question not found");
+        }
+
+        res.status(200).json(question);
+
+    } catch(err){
+        res.status(400).json({ error: "Could not find question" });
+    }
+})
+
 
 
 module.exports = router;

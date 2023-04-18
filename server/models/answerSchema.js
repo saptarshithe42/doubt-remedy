@@ -14,6 +14,16 @@ const answerSchema = new mongoose.Schema({
         required : true
     },
 
+    questionID : {
+        type : String,
+        required : true
+    },
+
+    points : {
+        type : Number,
+        required : true
+    },
+
     upvote : {
         type : Number,
         default : 0
