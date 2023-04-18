@@ -7,6 +7,7 @@ import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
 import Logout from "./components/Logout";
 import Userdata from "./pages/userdata/Userdata";
+import OffCanvas from "./components/OffCanvas";
 import { UserState } from "./context/AuthContext";
 import { Navigate } from "react-router-dom";
 
@@ -14,7 +15,7 @@ import { Navigate } from "react-router-dom";
 
 const Routing = () => {
 
-	const {user} = UserState();
+	const { user } = UserState();
 
 	return (
 		<Routes>
@@ -35,10 +36,13 @@ const Routing = () => {
 
 function App() {
 
+	const { user } = UserState();
+
 	return (
 		<div className="App">
-				<Navbar />
-				<Routing />
+			<Navbar />
+			{user && <OffCanvas />}
+			<Routing />
 		</div>
 	);
 }

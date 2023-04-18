@@ -213,9 +213,9 @@ router.delete("/api/deleteAnswer/:id", async (req, res) => {
         await answer.deleteOne();
         await User.updateOne(filter, updateObject);
 
-        filter = { _id : questionID }
+        filter = { _id: questionID }
         updateObject = {
-            $pull: { answers : answerID }
+            $pull: { answers: answerID }
         }
         await Question.updateOne(filter, updateObject);
 
@@ -230,14 +230,36 @@ router.delete("/api/deleteAnswer/:id", async (req, res) => {
 
 })
 
+
 // fetch questions
-router.get("/api/questions/:skip/:limit", async (req, res) => {
+router.get("/api/questions", async (req, res) => {
 
-    try{
+    try {
 
-        
+        const skip = req.query.skip;
+        const limit = req.query.limit;
+        const subject = req.query.subject;
+        // newest to oldest : -1, oldest to newest : 1
+        const order = req.query.order; 
 
-    } catch(err){
+        const filter = {}
+
+        if (subject) {
+            filter.subject = subject;
+        }
+
+        const data =
+            await Question
+                .find(filter)
+                .sort({ createdAt: (order ? order : -1) })
+                .skip(skip)
+                .limit(limit);
+
+        console.log(data);
+
+        res.status(200).json(data);
+
+    } catch (err) {
         res.status(400).json({ error: "Could not fetch questions" });
     }
 
@@ -246,20 +268,20 @@ router.get("/api/questions/:skip/:limit", async (req, res) => {
 // fetch question with given ID
 router.get("/api/question/:id", async (req, res) => {
 
-    try{
+    try {
 
         const questionID = req.params.id;
         const question = await Question.findById(questionID);
 
         // console.log(question);
 
-        if(!question) {
+        if (!question) {
             throw new Error("Question not found");
         }
 
         res.status(200).json(question);
 
-    } catch(err){
+    } catch (err) {
         res.status(400).json({ error: "Could not find question" });
     }
 })

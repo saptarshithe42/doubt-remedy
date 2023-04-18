@@ -18,7 +18,7 @@ import { UserState } from '../context/AuthContext'
 
 function Navbar() {
 	// const { state, dispatch } = useContext(UserContext);
-	const {user} = UserState();
+	const { user } = UserState();
 
 	const RenderMenu = () => {
 		// if user is logged in
@@ -26,6 +26,10 @@ function Navbar() {
 			return (
 				<>
 					<li ><Link to="/about" className="nav-item btn btn-outline-primary">About</Link></li>
+					<li className="nav-item btn btn-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+						Profile <FaUserCircle style={userIcon} />
+						{/* <OffCanvas /> */}
+					</li>
 					<li ><Link to="/logout" className="nav-item btn btn-outline-primary">Logout</Link></li>
 				</>
 			)
