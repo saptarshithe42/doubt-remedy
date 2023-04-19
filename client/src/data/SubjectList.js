@@ -1,5 +1,5 @@
 const subjectList = [
-
+    "All",
     "Mathematics",
     "Physics",
     "Chemistry",

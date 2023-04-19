@@ -240,18 +240,25 @@ router.get("/api/questions", async (req, res) => {
         const limit = req.query.limit;
         const subject = req.query.subject;
         // newest to oldest : -1, oldest to newest : 1
-        const order = req.query.order; 
+        let order = req.query.order;
+
+        if (order === "Newest to Oldest") {
+            order = -1;
+        }
+        else if (order === "Oldest to Newest") {
+            order = 1;
+        }
 
         const filter = {}
 
-        if (subject != "all") {
+        if (subject != "All") {
             filter.subject = subject;
         }
 
         const data =
             await Question
                 .find(filter)
-                .sort({ createdAt: (order ? order : -1) })
+                .sort({ createdAt: order })
                 .skip(skip)
                 .limit(limit);
 
@@ -286,6 +293,60 @@ router.get("/api/question/:id", async (req, res) => {
     }
 })
 
+
+// word search route configured
+router.get("/api/search/:word", async (req, res) => {
+
+    try {
+
+        const skip = req.query.skip;
+        const limit = req.query.limit;
+        const subject = req.query.subject;
+        const word = req.params.word;
+        let order = req.query.order;
+
+        console.log(word);
+
+        let filter = {
+            question: { $regex: `.*${word}*`, $options: 'i' }
+        }
+
+        // const data = await Question.find({
+
+            
+        // });
+
+
+        // newest to oldest : -1, oldest to newest : 1
+
+        if (order === "Newest to Oldest") {
+            order = -1;
+        }
+        else if (order === "Oldest to Newest") {
+            order = 1;
+        }
+
+        
+
+        if (subject != "All") {
+            filter.subject = subject;
+        }
+
+        const data =
+            await Question
+                .find(filter)
+                .sort({ createdAt: order })
+                .skip(skip)
+                .limit(limit);
+
+
+        res.status(200).json(data);
+
+    } catch (err) {
+        res.status(400).json({ error: "Could not find results" });
+    }
+
+})
 
 
 module.exports = router;

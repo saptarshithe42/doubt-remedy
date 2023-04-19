@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 // styles
 import "./SearchComponent.css"
 
-// components
+// icons
+import { BsSearch } from "react-icons/bs"
 
 
 function SearchComponent() {
@@ -32,7 +33,7 @@ function SearchComponent() {
                         className="form-control searchbar"
                         id="searchbar"
                         aria-describedby="searchbar"
-                        onChange={(e) => {setSearchWord((e.target.value.toUpperCase()))}}
+                        onChange={(e) => { setSearchWord((e.target.value)) }}
                         value={searchWord}
                         autoComplete="off"
                         placeholder="Search for any question"
@@ -40,10 +41,17 @@ function SearchComponent() {
                     />
 
                 </div>
-                <button type="submit" 
-                className="btn btn-primary"
-                onClick={searchRequest}
-                >Search</button>
+                {searchWord &&
+                    <button
+                        type="submit"
+                        className="btn btn-primary"
+                        onClick={searchRequest}
+                        style={{fontSize : "1.3rem"}}
+                    >
+                    <BsSearch size="1.5rem" /> &nbsp;
+                        Search
+                    </button>
+                }
             </form>
 
         </div>

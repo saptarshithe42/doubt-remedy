@@ -27,7 +27,7 @@ function QuestionCard({ question }) {
 				</div>
 
 				<div className="qs-card-footer">
-					<button className="btn btn-outline-dark">Answer</button>
+					<button className="btn btn-outline-success">Answer</button>
 				</div>
 			</div>
 		</div>

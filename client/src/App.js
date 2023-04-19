@@ -10,6 +10,7 @@ import Userdata from "./pages/userdata/Userdata";
 import OffCanvas from "./components/OffCanvas";
 import { UserState } from "./context/AuthContext";
 import { Navigate } from "react-router-dom";
+import SearchResults from "./pages/search/SearchResults";
 
 
 
@@ -20,6 +21,7 @@ const Routing = () => {
 	return (
 		<Routes>
 			<Route path="/" element={<Home />} />
+			<Route path="/search/:query" element={<SearchResults />} />
 			{/* <Route path="/about" element={<About />} /> */}
 			{user && <Route path="/about" element={<About />} />}
 			{/* <Route path="/about" element={!user ? <Navigate to="/login" /> : <About />} /> */}

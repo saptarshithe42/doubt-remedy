@@ -25,7 +25,7 @@ function Navbar() {
 		if (user) {
 			return (
 				<>
-					<li ><Link to="/about" className="nav-item btn btn-outline-primary">About</Link></li>
+					{/* <li ><Link to="/about" className="nav-item btn btn-outline-primary">About</Link></li> */}
 					<li className="nav-item btn btn-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
 						Profile <FaUserCircle style={userIcon} />
 						{/* <OffCanvas /> */}

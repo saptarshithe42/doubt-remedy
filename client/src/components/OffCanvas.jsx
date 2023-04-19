@@ -6,6 +6,8 @@ import "./OffCanvas.css"
 import { NavLink } from "react-router-dom"
 
 // icons
+import {FaQuestionCircle} from "react-icons/fa"
+import {BiMessageAltCheck} from "react-icons/bi"
 import { AiOutlineStar } from "react-icons/ai"
 import { AiOutlineUpload } from "react-icons/ai"
 import { AiOutlineDownload } from "react-icons/ai"
@@ -58,12 +60,12 @@ function OffCanvas() {
                             <AiOutlineHome className="offcanvas-icons" />  Home
                         </NavLink>
                  
-                        <NavLink to="/wishlist" className="nav-link-item">
-                            <AiFillHeart className="offcanvas-icons" />   Wishlist
+                        <NavLink to="/my_questions" className="nav-link-item">
+                            <FaQuestionCircle className="offcanvas-icons" />   My Questions
                         </NavLink>
                  
-                        <NavLink to="/cart" className="nav-link-item">
-                            <AiOutlineShoppingCart className="offcanvas-icons" />   Cart
+                        <NavLink to="/my_answered_questions" className="nav-link-item">
+                            <BiMessageAltCheck className="offcanvas-icons" />   Answered Questions
                         </NavLink>
                     
                         <NavLink to="/purchased_courses" className="nav-link-item">

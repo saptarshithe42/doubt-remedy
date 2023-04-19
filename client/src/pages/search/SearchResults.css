@@ -1,0 +1,12 @@
+.search-results-page-feed-options-div{
+
+    display: flex;
+    justify-content: center;
+    margin : 1rem auto;
+}
+
+.feed-options{
+
+    margin : 1rem;
+
+}
