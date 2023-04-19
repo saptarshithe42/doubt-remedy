@@ -1,0 +1,34 @@
+.question-card{
+
+    background-color: white;
+
+    margin-top : 0;
+    margin-bottom : 0;
+    /* border-radius: 25px; */
+    padding: 1rem;
+    /* width: 70%; */
+    margin-left: auto;
+    margin-right: auto;
+    border-bottom: 2px solid grey;
+}
+
+.qs-card-header{
+    
+    text-align: left;
+    margin : 0.5rem;
+    font-size: 1rem;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.qs-card-body{
+    margin : 1rem;
+    text-align: left;
+    font-size: 1.25rem;
+}
+
+.qs-card-footer{
+    display: flex;
+    justify-content: flex-end;
+}

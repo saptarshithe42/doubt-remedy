@@ -25,16 +25,17 @@ function SearchComponent() {
 
     return (
         <div className="search-component">
-            <form className="search-form">
+            <form className="search-form w-75">
                 <div className="mb-3">
                     <input
                         type="text"
-                        className="form-control"
+                        className="form-control searchbar"
                         id="searchbar"
                         aria-describedby="searchbar"
                         onChange={(e) => {setSearchWord((e.target.value.toUpperCase()))}}
                         value={searchWord}
                         autoComplete="off"
+                        placeholder="Search for any question"
                         required
                     />
 

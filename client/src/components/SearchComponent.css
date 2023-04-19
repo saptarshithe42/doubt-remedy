@@ -6,6 +6,15 @@
     text-align: center;
 }
 
+.search-component{
+    margin-bottom: 2rem;
+}
+
+.searchbar{
+    border : 0.1rem solid;
+    border-radius: 25px;
+}
+
 /* .search-btn
 {
     margin-left: auto;

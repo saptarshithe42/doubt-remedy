@@ -1,0 +1,11 @@
+.question-feed{
+    color : black;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.question-feed .row {
+    margin-left: auto;
+    margin-right: auto;
+    border : 2px solid grey;
+}

@@ -244,7 +244,7 @@ router.get("/api/questions", async (req, res) => {
 
         const filter = {}
 
-        if (subject) {
+        if (subject != "all") {
             filter.subject = subject;
         }
 
