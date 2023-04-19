@@ -10,58 +10,44 @@ import QuestionFeed from "../../components/QuestionFeed";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingAnimation from "../../components/LoadingAnimation"
+import Dropdown from "../../components/Dropdown";
+
+// data
+import subjectList from "../../data/SubjectList";
+import sortOptionsList from "../../data/SortOptions";
 
 function Home() {
 
 	const { user } = UserState();
+	const fetchLimit = 3;
 	const [questions, setQuestions] = useState([])
 	const [skip, setSkip] = useState(0)
 	const [subject, setSubject] = useState("all")
-	const [fetchLimit, setFetchLimit] = useState(3)
+	const [order, setOrder] = useState(1)
+	const [fetchCounter, setFetchCounter] = useState(1)
 	const [isLoading, setIsLoading] = useState(true)
 
-	// const userHomePage = async () => {
-	// 	try {
-
-	// 		const res = await fetch("/getdata", {
-	// 			method: "GET",
-	// 			headers: {
-	// 				"Content-Type": "application/json"
-	// 			}
-	// 		});
-
-	// 		const data = await res.json();
-	// 		setUserName(data.name);
-
-	// 		if (!res.status === 200) {
-	// 			const error = new Error(res.error);
-	// 			throw error;
-	// 		}
-
-	// 	} catch (err) {
-	// 		console.log(err);
-	// 	}
-	// }
-
-	// useEffect(() => {
-	// 	userHomePage();
-	// }, [])
 
 	const fetchData = async () => {
 
 		try {
 
-			const fetchUrl = `/api/questions?skip=${skip}&limit=${fetchLimit}&subject=${subject}`
+			const fetchUrl = `/api/questions?skip=${skip}&limit=${fetchLimit}&subject=${subject}&order=${order}`
 
 			const res = await fetch(fetchUrl);
 
+			if (res.status !== 200) {
+				throw new Error(res.error);
+			}
+
 			const data = await res.json();
 
-			console.log(data);
 
-			setSkip((prev) => {
-				return (prev + data.length);
-			})
+			if (data) {
+				setSkip((prev) => {
+					return (prev + data.length);
+				})
+			}
 
 			setQuestions((prev) => {
 				return [...prev, ...data]
@@ -77,13 +63,19 @@ function Home() {
 		}
 	}
 
+	const fetchMore = () => {
+
+		setFetchCounter((prev) => {
+			return (prev + 1);
+		})
+
+	}
+
 	useEffect(() => {
 
 		fetchData();
 
-	}, [])
-
-
+	}, [fetchCounter])
 
 
 	return (
@@ -96,13 +88,29 @@ function Home() {
 
 				<div className="homepage-feed-div">
 
-					{isLoading ? <LoadingAnimation /> : 
+					<div className="homepage-feed-options-div w-75">
+						{/* <button className="btn btn-primary feed-options">Sort</button>
+						<button className="btn btn-primary feed-options">Subject</button> */}
+						<Dropdown
+							name="Sort"
+							itemList={sortOptionsList}
+							setItem={setOrder}
+						/>
+						<Dropdown
+							name="Subject"
+							itemList={subjectList}
+							setItem={setSubject}
+						/>
+					</div>
+					{isLoading ? <LoadingAnimation /> :
 						<div>
 							{(questions.length == 0) && <h2>No questions to load</h2>}
 							{!(questions.length == 0) && <QuestionFeed questions={questions} />}
 						</div>
 					}
-					<button className="btn btn-primary">More</button>
+					<button className="btn btn-primary" onClick={fetchMore}
+						style={{ margin: "1rem" }}
+					>More</button>
 				</div>
 			</div>
 
