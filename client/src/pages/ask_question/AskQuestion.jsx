@@ -113,7 +113,8 @@ function AskQuestion() {
 
             const questionObj = {
                 question: question.trim(),
-                askedBy: userData.userID,
+                askedByID: userData.userID,
+                askedByUser : userData.username,
                 points: points,
                 subject: subject
             }

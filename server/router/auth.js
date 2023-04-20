@@ -47,7 +47,16 @@ router.post("/api/register", async (req, res) => {
 
         // res.status(201).json({ message: "user registered successfully" });
 
-        res.status(201).json({
+
+        const token = await user.generateAuthToken();
+        console.log(token);
+
+        res.cookie("jwtoken", token, {
+            expires: new Date(Date.now() + 2589200000),
+            httpOnly: true
+        });
+
+        res.status(200).json({
             _id: user._id,
             email: user.email,
             username: user.username,
@@ -111,12 +120,12 @@ router.post("/api/signin", async (req, res) => {
 
 router.get("/api/get_user_data", Authenticate, (req, res) => {
 
-    const {username, points } = req.rootUser;
+    const { username, points } = req.rootUser;
 
     const user = {
-        username : username,
-        points : points,
-        userID : req.userID
+        username: username,
+        points: points,
+        userID: req.userID
     }
 
     res.send(user);
@@ -146,7 +155,7 @@ router.post("/api/submitQuestion", async (req, res) => {
         await question.save();
 
         // add currently asked question's ID in user's askedQuestions array
-        const filter = { _id: question.askedBy }
+        const filter = { _id: question.askedByID }
         const updateObject = {
             $push: { askedQuestions: question._id },
             $inc: { points: -(question.points) }
@@ -176,7 +185,7 @@ router.post("/api/submitAnswer/", async (req, res) => {
         const questionID = answer.questionID;
 
         // add currently answered question's ID in user's answeredQuestions array
-        let filter = { _id: answer.answeredBy };
+        let filter = { _id: answer.answeredByID };
         let updateObject = {
             $push: { answeredQuestions: questionID },
             $inc: { points: answer.points }
@@ -208,7 +217,7 @@ router.delete("/api/deleteAnswer/:id", async (req, res) => {
 
         const answerID = req.params.id;
         const answer = await Answer.findById(answerID);
-        const userID = answer.answeredBy;
+        const userID = answer.answeredByID;
         const questionID = answer.questionID;
 
         // decrement points of user and delete the answer ID from user's answeredQuestions array
@@ -301,6 +310,27 @@ router.get("/api/question/:id", async (req, res) => {
     }
 })
 
+// fetch answer with given ID
+router.get("/api/answer/:id", async (req, res) => {
+
+    try {
+
+        const answerID = req.params.id;
+        const answer = await Answer.findById(answerID);
+
+        // console.log(question);
+
+        if (!answer) {
+            throw new Error("Answer not found");
+        }
+
+        res.status(200).json(answer);
+
+    } catch (err) {
+        res.status(400).json({ error: "Could not find answer" });
+    }
+})
+
 
 // word search route configured
 router.get("/api/search/:word", async (req, res) => {
@@ -321,7 +351,7 @@ router.get("/api/search/:word", async (req, res) => {
 
         // const data = await Question.find({
 
-            
+
         // });
 
 
@@ -334,7 +364,7 @@ router.get("/api/search/:word", async (req, res) => {
             order = 1;
         }
 
-        
+
 
         if (subject != "All") {
             filter.subject = subject;
@@ -353,6 +383,21 @@ router.get("/api/search/:word", async (req, res) => {
     } catch (err) {
         res.status(400).json({ error: "Could not find results" });
     }
+
+})
+
+
+// get asked questions by user
+router.get("/api/asked_questions", Authenticate, async (req, res) => {
+
+    res.status(200).json(req.rootUser.askedQuestions);
+
+})
+
+// get asked questions by user
+router.get("/api/answered_questions", Authenticate, async (req, res) => {
+
+    res.status(200).json(req.rootUser.answeredQuestions);
 
 })
 

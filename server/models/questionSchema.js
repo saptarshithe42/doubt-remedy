@@ -9,7 +9,12 @@ const questionSchema = new mongoose.Schema({
         required : true
     },
 
-    askedBy : {
+    askedByID : {
+        type : String,
+        required : true
+    },
+
+    askedByUser : {
         type : String,
         required : true
     },

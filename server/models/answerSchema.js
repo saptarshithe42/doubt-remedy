@@ -9,7 +9,12 @@ const answerSchema = new mongoose.Schema({
         required : true
     },
 
-    answeredBy : {
+    answeredByID : {
+        type : String,
+        required : true
+    },
+
+    answeredByUser : {
         type : String,
         required : true
     },
@@ -24,15 +29,10 @@ const answerSchema = new mongoose.Schema({
         required : true
     },
 
-    upvote : {
-        type : Number,
-        default : 0
-    },
-    downvote : {
+    rating : {
         type : Number,
         default : 0
     }
-    
 
 }, { timestamps: true });
 

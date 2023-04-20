@@ -38,25 +38,13 @@ function QuestionCard({ question }) {
 					{striptags(question.question).slice(0, 150)}...
 				</div>
 
-				{!isAnswered &&
-					<div className="qs-card-footer">
-						<a
-							className="btn btn-outline-success"
-							href={`/question/${question._id}`}
-						>
-							Answer
-						</a>
-					</div>
-				}
-				{isAnswered &&
-					<div className="qs-card-footer">
-						<a
-							className="btn btn-outline-success"
-						>
-							View
-						</a>
-					</div>
-				}
+
+				<div className="qs-card-footer">
+					<a className="btn btn-outline-success" href={`/question/${question._id}`}>
+						{isAnswered ? "View" : "Answer"}
+					</a>
+
+				</div>
 			</div>
 		</div>
 	)

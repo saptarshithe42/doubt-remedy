@@ -8,13 +8,10 @@ import { NavLink } from "react-router-dom"
 // icons
 import {FaQuestionCircle} from "react-icons/fa"
 import {BiMessageAltCheck} from "react-icons/bi"
-import { AiOutlineStar } from "react-icons/ai"
 import { AiOutlineUpload } from "react-icons/ai"
-import { AiOutlineDownload } from "react-icons/ai"
 import { AiOutlineHome } from "react-icons/ai"
-import {MdVideoLibrary} from "react-icons/md"
+import {GiBrain} from "react-icons/gi"
 import {RiVideoAddLine} from "react-icons/ri"
-import {AiOutlineShoppingCart} from "react-icons/ai"
 import {AiFillHeart} from "react-icons/ai"
 import {RiHistoryFill} from "react-icons/ri"
 import {RiDraftLine} from "react-icons/ri"
@@ -60,6 +57,10 @@ function OffCanvas() {
                             <AiOutlineHome className="offcanvas-icons" />  Home
                         </NavLink>
                  
+                        <NavLink to="/ask" className="nav-link-item">
+                            <GiBrain className="offcanvas-icons" />  Ask a Question
+                        </NavLink>
+
                         <NavLink to="/my_questions" className="nav-link-item">
                             <FaQuestionCircle className="offcanvas-icons" />   My Questions
                         </NavLink>
@@ -68,29 +69,6 @@ function OffCanvas() {
                             <BiMessageAltCheck className="offcanvas-icons" />   Answered Questions
                         </NavLink>
                     
-                        <NavLink to="/purchased_courses" className="nav-link-item">
-                            <MdVideoLibrary className="offcanvas-icons" />  Purchased Courses
-                        </NavLink>
-
-                        <NavLink to="/purchase_history" className="nav-link-item">
-                            <RiHistoryFill className="offcanvas-icons" />  Purchase History
-                        </NavLink>
-                  
-                        <NavLink to="/create" className="nav-link-item">
-                            <RiVideoAddLine className="offcanvas-icons" />  Create Course
-                        </NavLink>
-                  
-                        <NavLink to="/drafts" className="nav-link-item">
-                            <RiDraftLine className="offcanvas-icons" />  Drafts
-                        </NavLink>
-                   
-                        <NavLink to="/published_courses" className="nav-link-item">
-                            <AiOutlineUpload className="offcanvas-icons" />  Published Courses
-                        </NavLink>
-
-                        <NavLink to="/earnings" className="nav-link-item">
-                            <GiMoneyStack className="offcanvas-icons" />  Earnings
-                        </NavLink>
              
             </div>
         </div>
