@@ -1,0 +1,16 @@
+.editor-div{
+
+    margin : 2rem auto;
+
+}
+
+.ask-question-options-div{
+    display: flex;
+    justify-content: center;
+
+}
+
+.points-heading-ask-qs-page{
+
+    margin : 1rem;
+}

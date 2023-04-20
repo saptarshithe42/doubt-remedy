@@ -1,14 +1,26 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 
 // styles
 import "./QuestionCard.css"
 
 // components
+
+// utilities
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
 import format from "date-fns/format";
-const _ = require("lodash")
+import striptags from 'striptags';
 
 function QuestionCard({ question }) {
+
+	const [isAnswered, setIsAnswered] = useState(true)
+
+	useEffect(() => {
+
+		if (question.answers.length < 2) {
+			setIsAnswered(false);
+		}
+
+	}, [])
 
 
 	return (
@@ -16,19 +28,35 @@ function QuestionCard({ question }) {
 			<div>
 				<div className="qs-card-header">
 					<div>
-						<div>{_.startCase(question.subject)}</div>
+						<div>{question.subject}</div>
 						<div>{format(new Date(question.createdAt), "dd/MM/yyyy")}</div>
 					</div>
 					<div>{question.points} Points</div>
 				</div>
 
 				<div className="qs-card-body">
-					{(question.question).slice(0,150)}...
+					{striptags(question.question).slice(0, 150)}...
 				</div>
 
-				<div className="qs-card-footer">
-					<button className="btn btn-outline-success">Answer</button>
-				</div>
+				{!isAnswered &&
+					<div className="qs-card-footer">
+						<a
+							className="btn btn-outline-success"
+							href={`/question/${question._id}`}
+						>
+							Answer
+						</a>
+					</div>
+				}
+				{isAnswered &&
+					<div className="qs-card-footer">
+						<a
+							className="btn btn-outline-success"
+						>
+							View
+						</a>
+					</div>
+				}
 			</div>
 		</div>
 	)

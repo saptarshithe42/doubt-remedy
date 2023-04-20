@@ -11,6 +11,8 @@ import OffCanvas from "./components/OffCanvas";
 import { UserState } from "./context/AuthContext";
 import { Navigate } from "react-router-dom";
 import SearchResults from "./pages/search/SearchResults";
+import AskQuestion from "./pages/ask_question/AskQuestion";
+import AnswerQuestion from "./pages/answer_question/AnswerQuestion";
 
 
 
@@ -22,10 +24,12 @@ const Routing = () => {
 		<Routes>
 			<Route path="/" element={<Home />} />
 			<Route path="/search/:query" element={<SearchResults />} />
+			<Route path="/question/:id" element={<AnswerQuestion />} />
 			{/* <Route path="/about" element={<About />} /> */}
 			{user && <Route path="/about" element={<About />} />}
 			{/* <Route path="/about" element={!user ? <Navigate to="/login" /> : <About />} /> */}
-			{/* <Route path="/login" element={<Login />} /> */}
+			<Route path="/ask" element={<AskQuestion />} />
+			{/* <Route path="/ask" element={!user ? <Navigate to="/login" /> : <AskQuestion />} /> */}
 			<Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
 			<Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" />} />
 			<Route path="/signup" element={<Signup />} />

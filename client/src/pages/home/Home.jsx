@@ -94,24 +94,25 @@ function Home() {
 			<div>
 				<SearchComponent />
 
-				<button
+				<a
 					className="btn btn-outline-dark" 
 					style={{fontSize : "1.2rem"}}
+					href="/ask"
 					>
 					<BsFillQuestionCircleFill size="1.5rem" /> &nbsp;
 					Ask Question
-				</button>
+				</a>
 
 					<div className="homepage-feed-div">
 
 						<div className="homepage-feed-options-div w-75">
 							<Dropdown
-								name="Sort"
+								name={order}
 								itemList={sortOptionsList}
 								setItem={setOrder}
 							/>
 							<Dropdown
-								name="Subject"
+								name={subject}
 								itemList={subjectList}
 								setItem={setSubject}
 							/>

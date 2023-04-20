@@ -109,9 +109,17 @@ router.post("/api/signin", async (req, res) => {
 });
 
 
-router.get("/api/about", Authenticate, (req, res) => {
-    console.log("Hello About page!");
-    res.send(req.rootUser);
+router.get("/api/get_user_data", Authenticate, (req, res) => {
+
+    const {username, points } = req.rootUser;
+
+    const user = {
+        username : username,
+        points : points,
+        userID : req.userID
+    }
+
+    res.send(user);
 });
 
 
