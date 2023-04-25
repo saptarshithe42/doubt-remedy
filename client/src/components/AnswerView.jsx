@@ -39,7 +39,10 @@ function AnswerView({ answer }) {
                     </div>
                     <div className="answer-reaction-div">
                         <button className="btn btn-dark" disabled>{answer.rating}</button>
-                        <button className="btn btn-success">
+                        <button
+                            className="btn btn-success"
+                            onClick={upvoteAnswer}
+                        >
                             <BiUpvote />
                         </button>
                         <button className="btn btn-danger">

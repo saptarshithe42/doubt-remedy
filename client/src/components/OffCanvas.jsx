@@ -44,7 +44,8 @@ function OffCanvas() {
                         displayName={user.displayName}
                     /> */}
                     <ProfilePicture
-                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS9-73UZFtwlGMya7r7RPUm8N4na0r_TFLj0JUoh8j9W-2OYo&s"
+                        // src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS9-73UZFtwlGMya7r7RPUm8N4na0r_TFLj0JUoh8j9W-2OYo&s"
+                        src={user.imgUrl}
                         username={user.username}
                     />
                     {/* <p>{user.displayName}</p> */}

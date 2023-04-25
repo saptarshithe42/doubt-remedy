@@ -2,10 +2,14 @@ import React from "react"
 import { useState } from "react"
 import { UserState } from "../context/AuthContext"
 
-
+// styles
 import "./ProfilePicture.css"
 
-function ProfilePicture({ src, username}) {
+// components
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+function ProfilePicture({ src, username }) {
 
 	const { user } = UserState()
 	const [updateRequest, setUpdateRequest] = useState(false)
@@ -27,7 +31,10 @@ function ProfilePicture({ src, username}) {
 
 		if (!selected.type.includes("image")) {
 			setThumbnailError("selected file must be an image")
-			alert("selected file must be an image")
+			toast.error("selected file must be an image", {
+				position : "top-center"
+			})
+			// alert("selected file must be an image")
 			return
 		}
 
@@ -57,9 +64,55 @@ function ProfilePicture({ src, username}) {
 
 			window.location.reload(true);
 			*/
+
+			const formData = new FormData();
+			formData.append('file', thumbnail);
+			formData.append('upload_preset', 'doubt-remedy');
+			const response = await fetch(
+				`https://api.cloudinary.com/v1_1/dsuc8ju8e/image/upload`,
+				{
+					method: 'POST',
+					body: formData,
+				}
+			);
+			const data = await response.json();
+
+			// console.log(data.secure_url);
+
+			
+
+			const res = await fetch("/api/update_profile_picture", {
+
+				method : "POST",
+				headers: {
+                    "Content-Type": "application/json"
+                },
+
+				body : JSON.stringify({imgUrl :  data.secure_url})
+				
+			})
+
+			const userData = localStorage.getItem("userInfo");
+			let userInfo = JSON.parse(userData);
+
+			userInfo.imgUrl = data.secure_url;
+
+			localStorage.setItem("userInfo", JSON.stringify(userInfo));
+			
+			toast.success("Profile picture updated successfully", {
+				position : "top-center"
+			})
+
+			window.location.reload(false);
+
+			// setImageUrl(data.secure_url);
+
+
 		}
 		catch (err) {
-			alert(err)
+			toast.error("Error occurred", {
+				position : "top-center"
+			})
 		}
 
 	}
@@ -70,6 +123,7 @@ function ProfilePicture({ src, username}) {
 
 	return (
 		<div className="profile-div">
+			{/* <ToastContainer /> */}
 			<img src={src} className="profile-img" />
 			<p>{username}</p>
 			{!updateRequest &&

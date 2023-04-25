@@ -60,6 +60,7 @@ router.post("/api/register", async (req, res) => {
             _id: user._id,
             email: user.email,
             username: user.username,
+            imgUrl : user.imgUrl,
             token: user.generateAuthToken()
         });
 
@@ -104,6 +105,7 @@ router.post("/api/signin", async (req, res) => {
                 _id: user._id,
                 email: user.email,
                 username: user.username,
+                imgUrl : user.imgUrl,
                 token: token
             });
 
@@ -398,6 +400,32 @@ router.get("/api/asked_questions", Authenticate, async (req, res) => {
 router.get("/api/answered_questions", Authenticate, async (req, res) => {
 
     res.status(200).json(req.rootUser.answeredQuestions);
+
+})
+
+
+router.post("/api/update_profile_picture", Authenticate, async (req, res) => {
+
+    try{
+
+        const {imgUrl} = req.body;
+
+        console.log(imgUrl);
+
+        // res.status(200).json({url : imgUrl});
+
+        // update imgUrl of the user
+        const userID = req.userID;
+
+        await User.updateOne({_id : userID}, {imgUrl : imgUrl});
+
+        res.status(200).json({message : "Profile picture updated successfully."});
+
+
+
+    } catch(err){
+        res.status(400).json({ error: "Could not update profile picture." });
+    }
 
 })
 

@@ -24,6 +24,11 @@ const userSchema = new mongoose.Schema({
         required: true
     },
 
+    imgUrl : {
+        type : String,
+        default : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSS9-73UZFtwlGMya7r7RPUm8N4na0r_TFLj0JUoh8j9W-2OYo&s"
+    },
+
     points : {
         type : Number,
         min : 0,
