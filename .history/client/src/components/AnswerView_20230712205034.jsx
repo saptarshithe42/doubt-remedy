@@ -41,7 +41,7 @@ function AnswerView({ answer }) {
                         <button className="btn btn-dark" disabled>{answer.rating}</button>
                         <button
                             className="btn btn-success"
-                            // onClick={upvoteAnswer}
+                            onClick={upvoteAnswer}
                         >
                             <BiUpvote />
                         </button>
