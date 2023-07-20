@@ -1,33 +1,17 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/userSchema");
+import JWT from "jsonwebtoken";
 
+// Protected routes token based
+export const requireSignIn = async (req, res, next) => {
+    try {
+        const decode = JWT.verify(
+            req.headers.authorization,
+            process.env.JWT_SECRET
+        );
 
-const Authenticate = async (req, res, next) => {
-
-    try{
-
-        const token = req.cookies.jwtoken;
-        const verifyToken = jwt.verify(token, process.env.SECRET_KEY);
-
-        // the entire user document comes in rootUser
-        // const rootUser = await User.findOne({_id : verifyToken._id, "tokens.token" : token});
-        const rootUser = await User.findOne({_id : verifyToken._id});
-
-        // console.log(rootUser);
-
-        if(!rootUser){
-            throw new Error("User not found");
-        }
-
-        req.token = token;
-        req.rootUser = rootUser;
-        req.userID = rootUser._id;
+        req.user = decode;
         next();
-
-    }catch(err){
+    } catch (error) {
         res.status(401).send("Unauthorized : no token provided.");
-        console.log(err);
+        console.log(error);
     }
-}
-
-module.exports = Authenticate;
+};
