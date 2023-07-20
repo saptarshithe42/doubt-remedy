@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { UserState } from "../../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
-import axios from "axios";
 
 // styles
 import "./Login.css";
@@ -35,7 +34,7 @@ export default function Login() {
                     duration: 5000,
                 });
 
-                setUser({
+                setAuth({
                     ...auth,
                     user: res.data.user,
                     token: res.data.token,
@@ -49,6 +48,54 @@ export default function Login() {
         } catch (error) {
             console.log(error);
             toast.error("Something went wrong");
+        }
+    };
+
+    const handleSubmitt = async (e) => {
+        e.preventDefault();
+
+        try {
+            if (!email || !password) {
+                throw new Error("Please fill all the fields.");
+            }
+
+            const res = await fetch("/api/signin", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                }),
+            });
+
+            // console.log(res);
+
+            const data = await res.json();
+
+            // console.log(data);
+
+            if (res.status === 400 || !data) {
+                throw new Error("Invalid Credentials");
+            } else {
+                localStorage.setItem("userInfo", JSON.stringify(data));
+                setUser(data);
+                // window.alert("Login successful");
+                navigate("/");
+            }
+        } catch (err) {
+            // window.alert(err);
+            toast.error(err.message, {
+                position: "top-center",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
         }
     };
 
@@ -77,7 +124,15 @@ export default function Login() {
                 />
             </label>
 
-            <button className="btn btn-outline-success">Login</button>
+            <button className="btn btn-outline-success" onClick={handleSubmit}>
+                Login
+            </button>
+
+            <div>
+                {/* {!isPending && <button className="btn btn-outline-success">Login</button>}
+        {isPending && <button className="btn btn-outline-success" disabled>loading</button>}
+        {error && <div className="error">{error}</div>} */}
+            </div>
         </form>
     );
 }

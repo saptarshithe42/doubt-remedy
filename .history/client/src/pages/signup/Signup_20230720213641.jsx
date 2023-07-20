@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserState } from "../../context/AuthContext";
 import axios from "axios";
 
 // styles
@@ -38,10 +39,60 @@ export default function Signup() {
         }
     };
 
+    // const handleSubmitt = async (e) => {
+    //     e.preventDefault();
+
+    //     try {
+    //         if (!email || !password || !username) {
+    //             throw new Error("Please fill all the fields.");
+    //         }
+
+    //         const res = await fetch("/api/register", {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify({
+    //                 email,
+    //                 password,
+    //                 username,
+    //             }),
+    //         });
+
+    //         const data = await res.json();
+
+    //         console.log(res);
+
+    //         if (res.status === 400 || !data) {
+    //             throw new Error("username / email already exists.");
+    //         } else {
+    //             localStorage.setItem("userInfo", JSON.stringify(data));
+    //             setUser(data);
+    //             console.log("Registration successful!");
+    //             // window.alert("Registration successful!");
+    //             navigate("/");
+    //             // navigate("/login");
+    //         }
+    //     } catch (err) {
+    //         // window.alert(err);
+
+    //         toast.error(err.message, {
+    //             position: "top-center",
+    //             autoClose: 2000,
+    //             hideProgressBar: false,
+    //             closeOnClick: true,
+    //             pauseOnHover: false,
+    //             draggable: true,
+    //             progress: undefined,
+    //             theme: "light",
+    //         });
+    //     }
+    // };
+
     return (
         <form className="signup-form" method="POST" onSubmit={handleSubmit}>
             <h2>Sign up</h2>
-            <Toaster />
+            <ToastContainer />
 
             <label>
                 <span>Username:</span>
@@ -74,6 +125,10 @@ export default function Signup() {
             </label>
 
             <button className="btn btn-outline-success">Sign up</button>
+
+            {/* {!isPending && <button className="btn btn-outline-success">Sign up</button>}
+      {isPending && <button className="btn" disabled>loading</button>}
+      {error && <div className="error">{error}</div>} */}
         </form>
     );
 }

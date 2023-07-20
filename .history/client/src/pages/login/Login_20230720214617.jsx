@@ -77,7 +77,15 @@ export default function Login() {
                 />
             </label>
 
-            <button className="btn btn-outline-success">Login</button>
+            <button className="btn btn-outline-success" onClick={handleSubmit}>
+                Login
+            </button>
+
+            <div>
+                {/* {!isPending && <button className="btn btn-outline-success">Login</button>}
+        {isPending && <button className="btn btn-outline-success" disabled>loading</button>}
+        {error && <div className="error">{error}</div>} */}
+            </div>
         </form>
     );
 }

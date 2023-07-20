@@ -78,6 +78,8 @@ export default function Login() {
             </label>
 
             <button className="btn btn-outline-success">Login</button>
+
+            <div></div>
         </form>
     );
 }

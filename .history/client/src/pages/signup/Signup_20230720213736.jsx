@@ -1,31 +1,25 @@
-import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { UserState } from "../../context/AuthContext";
-import toast, { Toaster } from "react-hot-toast";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // styles
-import "./Login.css";
+import "./Signup.css";
 
-export default function Login() {
+// components
+import toast, { Toaster } from "react-hot-toast";
+
+export default function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("");
 
     const navigate = useNavigate();
-    const location = useLocation();
-
-    const { user, setUser } = UserState();
-
-    useEffect(() => {
-        if (user) {
-            navigate("/");
-        }
-    }, [user]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post(`/api/v1/auth/login`, {
+            const res = await axios.post(`/api/v1/auth/register`, {
+                username,
                 email,
                 password,
             });
@@ -34,15 +28,7 @@ export default function Login() {
                 toast.success(res.data.message, {
                     duration: 5000,
                 });
-
-                setUser({
-                    ...auth,
-                    user: res.data.user,
-                    token: res.data.token,
-                });
-
-                localStorage.setItem("userInfo", JSON.stringify(res.data));
-                navigate(location.state || "/");
+                navigate("/login");
             } else {
                 toast.error(res.data.message);
             }
@@ -53,9 +39,19 @@ export default function Login() {
     };
 
     return (
-        <form className="login-form" method="POST" onSubmit={handleSubmit}>
-            <h2>Login</h2>
-            <Toaster />
+        <form className="signup-form" method="POST" onSubmit={handleSubmit}>
+            <h2>Sign up</h2>
+            <ToastContainer />
+
+            <label>
+                <span>Username:</span>
+                <input
+                    required
+                    type="text"
+                    onChange={(e) => setUsername(e.target.value)}
+                    value={username}
+                />
+            </label>
 
             <label>
                 <span>Email:</span>
@@ -77,7 +73,11 @@ export default function Login() {
                 />
             </label>
 
-            <button className="btn btn-outline-success">Login</button>
+            <button className="btn btn-outline-success">Sign up</button>
+
+            {/* {!isPending && <button className="btn btn-outline-success">Sign up</button>}
+      {isPending && <button className="btn" disabled>loading</button>}
+      {error && <div className="error">{error}</div>} */}
         </form>
     );
 }
