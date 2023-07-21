@@ -1,20 +1,20 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const router = express.Router();
-const Authenticate = require("../middleware/authenticate");
-const cookieParser = require("cookie-parser");
+// const express = require("express");
+// const bcrypt = require("bcryptjs");
+// const jwt = require("jsonwebtoken");
+// const router = express.Router();
+// const Authenticate = require("../middleware/authenticate");
+// const cookieParser = require("cookie-parser");
 
-require("../db/conn");
-const User = require("../models/userSchema");
-const Question = require("../models/questionSchema");
-const Answer = require("../models/answerSchema");
+// require("../db/conn");
+// const User = require("../models/userSchema");
+// const Question = require("../models/questionSchema");
+// const Answer = require("../models/answerSchema");
 
-router.use(cookieParser());
+// router.use(cookieParser());
 
-router.get("/", (req, res) => {
-    res.send("Hello World from router!");
-});
+// router.get("/", (req, res) => {
+//     res.send("Hello World from router!");
+// });
 
 // // handling promises with async/await
 // router.post("/api/register", async (req, res) => {
@@ -155,67 +155,67 @@ router.get("/", (req, res) => {
 //     }
 // });
 
-// submit answer
-router.post("/api/submitAnswer/", async (req, res) => {
-    try {
-        // save answer in database
-        const answer = new Answer(req.body);
-        await answer.save();
+// // submit answer
+// router.post("/api/submitAnswer/", async (req, res) => {
+//     try {
+//         // save answer in database
+//         const answer = new Answer(req.body);
+//         await answer.save();
 
-        const questionID = answer.questionID;
+//         const questionID = answer.questionID;
 
-        // add currently answered question's ID in user's answeredQuestions array
-        let filter = { _id: answer.answeredByID };
-        let updateObject = {
-            $push: { answeredQuestions: questionID },
-            $inc: { points: answer.points },
-        };
+//         // add currently answered question's ID in user's answeredQuestions array
+//         let filter = { _id: answer.answeredByID };
+//         let updateObject = {
+//             $push: { answeredQuestions: questionID },
+//             $inc: { points: answer.points },
+//         };
 
-        await User.updateOne(filter, updateObject);
+//         await User.updateOne(filter, updateObject);
 
-        // add the answer ID in question's answer array
-        filter = { _id: questionID };
-        updateObject = {
-            $push: { answers: answer._id },
-        };
-        await Question.updateOne(filter, updateObject);
+//         // add the answer ID in question's answer array
+//         filter = { _id: questionID };
+//         updateObject = {
+//             $push: { answers: answer._id },
+//         };
+//         await Question.updateOne(filter, updateObject);
 
-        res.status(200).json({ message: "Submitted answer successfully" });
-    } catch (err) {
-        res.status(400).json({ error: "Could not submit answer" });
-    }
-});
+//         res.status(200).json({ message: "Submitted answer successfully" });
+//     } catch (err) {
+//         res.status(400).json({ error: "Could not submit answer" });
+//     }
+// });
 
-// to delete answer with given ID
-router.delete("/api/deleteAnswer/:id", async (req, res) => {
-    try {
-        const answerID = req.params.id;
-        const answer = await Answer.findById(answerID);
-        const userID = answer.answeredByID;
-        const questionID = answer.questionID;
+// // to delete answer with given ID
+// router.delete("/api/deleteAnswer/:id", async (req, res) => {
+//     try {
+//         const answerID = req.params.id;
+//         const answer = await Answer.findById(answerID);
+//         const userID = answer.answeredByID;
+//         const questionID = answer.questionID;
 
-        // decrement points of user and delete the answer ID from user's answeredQuestions array
-        let filter = { _id: userID };
-        let updateObject = {
-            $pull: { answeredQuestions: questionID },
-            $inc: { points: -answer.points },
-        };
+//         // decrement points of user and delete the answer ID from user's answeredQuestions array
+//         let filter = { _id: userID };
+//         let updateObject = {
+//             $pull: { answeredQuestions: questionID },
+//             $inc: { points: -answer.points },
+//         };
 
-        await answer.deleteOne();
-        await User.updateOne(filter, updateObject);
+//         await answer.deleteOne();
+//         await User.updateOne(filter, updateObject);
 
-        filter = { _id: questionID };
-        updateObject = {
-            $pull: { answers: answerID },
-        };
-        await Question.updateOne(filter, updateObject);
+//         filter = { _id: questionID };
+//         updateObject = {
+//             $pull: { answers: answerID },
+//         };
+//         await Question.updateOne(filter, updateObject);
 
-        res.status(200).json({ message: "Deleted answer successfully" });
-    } catch (err) {
-        console.log(err);
-        res.status(400).json({ error: "Could not delete answer" });
-    }
-});
+//         res.status(200).json({ message: "Deleted answer successfully" });
+//     } catch (err) {
+//         console.log(err);
+//         res.status(400).json({ error: "Could not delete answer" });
+//     }
+// });
 
 // // fetch questions
 // router.get("/api/questions", async (req, res) => {
@@ -269,65 +269,65 @@ router.delete("/api/deleteAnswer/:id", async (req, res) => {
 //     }
 // });
 
-// fetch answer with given ID
-router.get("/api/answer/:id", async (req, res) => {
-    try {
-        const answerID = req.params.id;
-        const answer = await Answer.findById(answerID);
+// // fetch answer with given ID
+// router.get("/api/answer/:id", async (req, res) => {
+//     try {
+//         const answerID = req.params.id;
+//         const answer = await Answer.findById(answerID);
 
-        // console.log(question);
+//         // console.log(question);
 
-        if (!answer) {
-            throw new Error("Answer not found");
-        }
+//         if (!answer) {
+//             throw new Error("Answer not found");
+//         }
 
-        res.status(200).json(answer);
-    } catch (err) {
-        res.status(400).json({ error: "Could not find answer" });
-    }
-});
+//         res.status(200).json(answer);
+//     } catch (err) {
+//         res.status(400).json({ error: "Could not find answer" });
+//     }
+// });
 
-// word search route configured
-router.get("/api/search/:word", async (req, res) => {
-    try {
-        const skip = req.query.skip;
-        const limit = req.query.limit;
-        const subject = req.query.subject;
-        const word = req.params.word;
-        let order = req.query.order;
+// // word search route configured
+// router.get("/api/search/:word", async (req, res) => {
+//     try {
+//         const skip = req.query.skip;
+//         const limit = req.query.limit;
+//         const subject = req.query.subject;
+//         const word = req.params.word;
+//         let order = req.query.order;
 
-        console.log(word);
+//         console.log(word);
 
-        let filter = {
-            question: { $regex: `.*${word}*`, $options: "i" },
-        };
+//         let filter = {
+//             question: { $regex: `.*${word}*`, $options: "i" },
+//         };
 
-        // const data = await Question.find({
+//         // const data = await Question.find({
 
-        // });
+//         // });
 
-        // newest to oldest : -1, oldest to newest : 1
+//         // newest to oldest : -1, oldest to newest : 1
 
-        if (order === "Newest to Oldest") {
-            order = -1;
-        } else if (order === "Oldest to Newest") {
-            order = 1;
-        }
+//         if (order === "Newest to Oldest") {
+//             order = -1;
+//         } else if (order === "Oldest to Newest") {
+//             order = 1;
+//         }
 
-        if (subject != "All") {
-            filter.subject = subject;
-        }
+//         if (subject != "All") {
+//             filter.subject = subject;
+//         }
 
-        const data = await Question.find(filter)
-            .sort({ createdAt: order })
-            .skip(skip)
-            .limit(limit);
+//         const data = await Question.find(filter)
+//             .sort({ createdAt: order })
+//             .skip(skip)
+//             .limit(limit);
 
-        res.status(200).json(data);
-    } catch (err) {
-        res.status(400).json({ error: "Could not find results" });
-    }
-});
+//         res.status(200).json(data);
+//     } catch (err) {
+//         res.status(400).json({ error: "Could not find results" });
+//     }
+// });
 
 // // get asked questions by user
 // router.get("/api/asked_questions", Authenticate, async (req, res) => {
@@ -360,4 +360,4 @@ router.get("/api/search/:word", async (req, res) => {
 //     }
 // });
 
-module.exports = router;
+// module.exports = router;

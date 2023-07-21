@@ -14,13 +14,13 @@ export default function Login() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { user, setUser } = UserState();
+    const { auth, setAuth } = UserState();
 
     useEffect(() => {
-        if (user) {
+        if (auth?.user) {
             navigate("/");
         }
-    }, [user]);
+    }, [auth?.user]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -35,8 +35,7 @@ export default function Login() {
                     duration: 5000,
                 });
 
-                setUser({
-                    ...auth,
+                setAuth({
                     user: res.data.user,
                     token: res.data.token,
                 });

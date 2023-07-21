@@ -50,22 +50,21 @@ export const fetchQuestionsController = async (req, res) => {
             filter.subject = subject;
         }
 
-        const data = await questionModel
+        const questions = await questionModel
             .find(filter)
             .sort({ createdAt: order })
             .skip(skip)
             .limit(limit);
 
-        console.log(data);
-
         res.status(200).send({
             success: true,
-            questions: data,
+            questions,
         });
     } catch (err) {
         res.status(400).send({
             success: false,
             message: "Could not fetch questions",
+            err,
         });
     }
 };
@@ -140,6 +139,48 @@ export const getAnsweredQuestionsController = async (req, res) => {
                 message: "Could not fetch questions.",
             });
         }
+
+        res.status(200).send({
+            success: true,
+            message: "Questions fetched",
+            questions,
+        });
+    } catch (err) {
+        res.status(400).send({
+            success: false,
+            message: "Could not find questions",
+        });
+    }
+};
+
+// search question
+export const searchController = async (req, res) => {
+    try {
+        const skip = req.query.skip;
+        const limit = req.query.limit;
+        const subject = req.query.subject;
+        const word = req.params.word;
+        let order = req.query.order;
+
+        let filter = {
+            question: { $regex: `.*${word}*`, $options: "i" },
+        };
+
+        if (order === "Newest to Oldest") {
+            order = -1;
+        } else if (order === "Oldest to Newest") {
+            order = 1;
+        }
+
+        if (subject !== "All") {
+            filter.subject = subject;
+        }
+
+        const questions = await questionModel
+            .find(filter)
+            .sort({ createdAt: order })
+            .skip(skip)
+            .limit(limit);
 
         res.status(200).send({
             success: true,

@@ -6,13 +6,14 @@ import {
     submitQuestionController,
     getAskedQuestionsController,
     getAnsweredQuestionsController,
+    searchController,
 } from "../controllers/questionController.js";
 
 // router object
 const router = express.Router();
 
 // submit question
-router.post("/submitQuestion", requireSignIn, submitQuestionController);
+router.post("/submit-question", requireSignIn, submitQuestionController);
 
 // fetch questions (skip, limit, subject, order queries are supported)
 router.get("/fetch-questions", fetchQuestionsController);
@@ -29,5 +30,11 @@ router.get(
     requireSignIn,
     getAnsweredQuestionsController
 );
+
+// word search route configured
+router.get("/search/:word", searchController);
+
+// check if question (id provided) is asked by a particular user
+// router.get("/check-asked-question", checkAskedQuestion)
 
 export default router;

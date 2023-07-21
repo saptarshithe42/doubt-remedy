@@ -17,61 +17,72 @@ import AskedQuestions from "./pages/asked_questions/AskedQuestions";
 import AnsweredQuestions from "./pages/answered_questions/AnsweredQuestions";
 
 function PrivateRoute({ path, ...props }) {
-  const { user } = UserState();
+    const { auth } = UserState();
 
-  if (user) {
-    // Render the route component if the user is authenticated
-    return <Route path={path} {...props} />;
-  } else {
-    // Redirect to the login page if the user is not authenticated
-    return <Navigate to="/login" replace />;
-  }
+    if (auth?.user) {
+        // Render the route component if the user is authenticated
+        return <Route path={path} {...props} />;
+    } else {
+        // Redirect to the login page if the user is not authenticated
+        return <Navigate to="/login" replace />;
+    }
 }
-
-  
-
-
 
 const Routing = () => {
+    const { auth } = UserState();
 
-	const { user } = UserState();
+    return (
+        <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/search/:query" element={<SearchResults />} />
+            <Route path="/question/:id" element={<AnswerQuestion />} />
+            {/* {auth?.user && (
+                <Route path="/my_questions" element={<AskedQuestions />} />
+            )} */}
 
-	return (
-		<Routes>
-			<Route path="/" element={<Home />} />
-			<Route path="/search/:query" element={<SearchResults />} />
-			<Route path="/question/:id" element={<AnswerQuestion />} />
-			{user && <Route path="/my_questions" element={<AskedQuestions />} />}
-			{user && <Route path="/my_answered_questions" element={<AnsweredQuestions />} />}
-			{/* <Route path="/question/:id" element={<PrivateRoute element={<AnswerQuestion />} />} /> */}
+            <Route
+                path="/my_questions"
+                element={
+                    !auth?.user ? <Navigate to="/login" /> : <AskedQuestions />
+                }
+            />
 
-			{/* <Route path="/about" element={<About />} /> */}
-			{/* {user && <Route path="/about" element={<About />} />} */}
-			{/* <PrivateRoute path="/about" element={<About />} /> */}
-			{/* <Route path="/about" element={!user ? <Navigate to="/login" /> : <About />} /> */}
-			<Route path="/ask" element={<AskQuestion />} />
-			{/* <Route path="/ask" element={!user ? <Navigate to="/login" /> : <AskQuestion />} /> */}
-			<Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-			<Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" />} />
-			<Route path="/signup" element={<Signup />} />
-			<Route path="/logout" element={<Logout />} />
-			<Route path="/userdata" element={<Userdata />} />
-		</Routes>
-	)
-}
-
+            {auth?.user && (
+                <Route
+                    path="/my_answered_questions"
+                    element={<AnsweredQuestions />}
+                />
+            )}
+            <Route
+                path="/ask"
+                element={!auth?.user ? <Login /> : <AskQuestion />}
+            />
+            {/* <Route path="/ask" element={!user ? <Navigate to="/login" /> : <AskQuestion />} /> */}
+            <Route
+                path="/login"
+                element={!auth?.user ? <Login /> : <Navigate to="/" />}
+            />
+            <Route
+                path="/signup"
+                element={!auth?.user ? <Signup /> : <Navigate to="/" />}
+            />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/userdata" element={<Userdata />} />
+        </Routes>
+    );
+};
 
 function App() {
+    const { auth } = UserState();
 
-	const { user } = UserState();
-
-	return (
-		<div className="App">
-			<Navbar />
-			{user && <OffCanvas />}
-			<Routing />
-		</div>
-	);
+    return (
+        <div className="App">
+            <Navbar />
+            {auth?.user && <OffCanvas />}
+            <Routing />
+        </div>
+    );
 }
 
 export default App;
