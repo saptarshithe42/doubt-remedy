@@ -9,16 +9,9 @@ import "./QuestionCard.css";
 import formatDistanceToNow from "date-fns/formatDistanceToNow";
 import format from "date-fns/format";
 import striptags from "striptags";
+import { Link } from "react-router-dom";
 
 function QuestionCard({ question }) {
-    const [isAnswered, setIsAnswered] = useState(true);
-
-    useEffect(() => {
-        if (question.answers.length < 2) {
-            setIsAnswered(false);
-        }
-    }, []);
-
     return (
         <div className="question-card col-12">
             <div>
@@ -37,12 +30,12 @@ function QuestionCard({ question }) {
                 </div>
 
                 <div className="qs-card-footer">
-                    <a
+                    <Link
                         className="btn btn-outline-success"
-                        href={`/question/${question._id}`}
+                        to={`/question/${question._id}`}
                     >
-                        {isAnswered ? "View" : "Answer"}
-                    </a>
+                        View
+                    </Link>
                 </div>
             </div>
         </div>

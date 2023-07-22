@@ -191,6 +191,116 @@ export const searchController = async (req, res) => {
         res.status(400).send({
             success: false,
             message: "Could not find questions",
+            err,
+        });
+    }
+};
+
+// check if question (id provided) is asked by a particular user
+export const checkAskedController = async (req, res) => {
+    try {
+        const questionID = req.params.id;
+        const userID = req.user._id;
+
+        const asked = await userModel
+            .findOne({
+                _id: userID,
+                askedQuestions: { $in: [questionID] },
+            })
+            .select("_id");
+
+        if (asked) {
+            return res.status(200).send({
+                success: true,
+                asked: true,
+                message: "User has asked this question.",
+            });
+        } else {
+            return res.status(200).send({
+                success: true,
+                asked: false,
+                message: "User has not asked this question.",
+            });
+        }
+    } catch (err) {
+        res.status(400).send({
+            success: false,
+            message: "Could not check if this question is asked by user.",
+            err,
+        });
+    }
+};
+
+// check if question (id provided) is already answered by a particular user
+export const checkAnsweredController = async (req, res) => {
+    try {
+        const questionID = req.params.id;
+        const userID = req.user._id;
+
+        const answered = await userModel
+            .findOne({
+                _id: userID,
+                answeredQuestions: { $in: [questionID] },
+            })
+            .select("_id");
+
+        if (answered) {
+            return res.status(200).send({
+                success: true,
+                answered: true,
+                message: "User has already answered this question.",
+            });
+        } else {
+            return res.status(200).send({
+                success: true,
+                answered: false,
+                message: "User has not answered this question.",
+            });
+        }
+    } catch (err) {
+        res.status(400).send({
+            success: false,
+            message: "Could not check if this question is answered by user.",
+            err,
+        });
+    }
+};
+
+// check if question (id provided) is asked or answered by a particular user
+export const checkAskedOrAnsweredController = async (req, res) => {
+    try {
+        const questionID = req.params.id;
+        const userID = req.user._id;
+
+        const status = await userModel
+            .findOne({
+                _id: userID,
+                $or: [
+                    { askedQuestions: { $in: [questionID] } },
+                    { answeredQuestions: { $in: [questionID] } },
+                ],
+            })
+            .select("_id");
+
+        if (status) {
+            return res.status(200).send({
+                success: true,
+                status: true,
+                message: "User has asked / answered this question.",
+            });
+        } else {
+            return res.status(200).send({
+                success: true,
+                status: false,
+                message: "User has not asked / answered this question.",
+            });
+        }
+    } catch (err) {
+        res.status(400).send({
+            success: false,
+            message:
+                "Could not check if this question is asked / answered by user.",
+            err,
         });
     }
 };

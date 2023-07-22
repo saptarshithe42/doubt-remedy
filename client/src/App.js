@@ -16,17 +16,17 @@ import AnswerQuestion from "./pages/answer_question/AnswerQuestion";
 import AskedQuestions from "./pages/asked_questions/AskedQuestions";
 import AnsweredQuestions from "./pages/answered_questions/AnsweredQuestions";
 
-function PrivateRoute({ path, ...props }) {
-    const { auth } = UserState();
+// function PrivateRoute({ path, ...props }) {
+//     const { auth } = UserState();
 
-    if (auth?.user) {
-        // Render the route component if the user is authenticated
-        return <Route path={path} {...props} />;
-    } else {
-        // Redirect to the login page if the user is not authenticated
-        return <Navigate to="/login" replace />;
-    }
-}
+//     if (auth?.user) {
+//         // Render the route component if the user is authenticated
+//         return <Route path={path} {...props} />;
+//     } else {
+//         // Redirect to the login page if the user is not authenticated
+//         return <Navigate to="/login" replace />;
+//     }
+// }
 
 const Routing = () => {
     const { auth } = UserState();

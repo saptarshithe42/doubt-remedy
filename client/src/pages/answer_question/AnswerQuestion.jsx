@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserState } from "../../context/AuthContext";
 import axios from "axios";
 
@@ -58,7 +58,7 @@ const formats = [
 function AnswerQuestion() {
     const { id } = useParams();
 
-    const { user } = UserState();
+    const { auth } = UserState();
     const navigate = useNavigate();
 
     const [question, setQuestion] = useState(null);
@@ -72,16 +72,10 @@ function AnswerQuestion() {
                 `/api/v1/questions/get-question/${id}`
             );
 
-            // if (res?.data?. !== 200) {
-            //     throw new Error("Could not fetch question");
-            // }
-
             if (data?.success === false) {
                 toast.error("Could not fetch question");
                 return;
             }
-
-            // console.log(data);
 
             const qs = data.question;
 
@@ -112,83 +106,41 @@ function AnswerQuestion() {
         }
     };
 
-    const fetchAskedQuestions = async () => {
+    // check if the question has been asked / answered by the user
+    const askedOrAnsweredByUser = async () => {
         try {
             const { data } = await axios.get(
-                `/api/v1/questions/asked_questions`
+                `/api/v1/questions/check-asked-or-answered/${id}`
             );
 
             if (data?.success === false) {
-                toast.error("Something went wrong");
+                toast.error(data?.message);
                 return;
             }
 
-            // user who asked the question cannot answer it
-            if (data?.questions.includes(id)) {
+            // user has asked / answered the question
+            if (data?.status) {
                 setCanAnswer(false);
+            } else {
+                setCanAnswer(true);
             }
-
-            // setIsLoading(false);
-        } catch (err) {
-            console.log(err);
-            navigate("/login");
-        }
-    };
-
-    // function to check if user has asked this question
-    const askedByUser = async () => {
-        try {
-            console.log(id);
         } catch (error) {
             toast.error("Something went wrong");
         }
     };
 
-    const fetchAnsweredQuestions = async () => {
-        try {
-            const res = await fetch("/api/answered_questions", {
-                method: "GET",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            });
-
-            // console.log(res);
-
-            const data = await res.json();
-
-            console.log(data);
-
-            // if user already answered the question then cannot answer it again
-            if (data.includes(id)) {
-                setCanAnswer(false);
-            }
-
-            if (res.status !== 200) {
-                const error = new Error(res.error);
-                throw error;
-            }
-
-            // setIsLoading(false);
-        } catch (err) {
-            console.log(err);
-            navigate("/login");
-        }
-    };
-
+    // fetch answered by ID
     const fetchAnswerByID = async (id) => {
         try {
-            const res = await fetch(`/api/answer/${id}`);
+            const { data } = await axios.get(
+                `/api/v1/answers/get-answer/${id}`
+            );
 
-            const data = await res.json();
-
-            if (res.status !== 200) {
-                throw new Error("Could not fetch answer");
+            if (data?.success === false) {
+                toast.error(data?.message);
+                return null;
             }
-
-            return data;
+            return data?.answer;
         } catch (err) {
             toast.error(err.message, {
                 position: "top-center",
@@ -198,9 +150,13 @@ function AnswerQuestion() {
 
     useEffect(() => {
         fetchQuestion(id);
-        fetchAskedQuestions();
-        fetchAnsweredQuestions();
     }, []);
+
+    useEffect(() => {
+        if (auth?.user) {
+            askedOrAnsweredByUser();
+        }
+    }, [auth?.user]);
 
     const submitAnswer = async () => {
         try {
@@ -212,22 +168,19 @@ function AnswerQuestion() {
 
             const answerObj = {
                 content: answer,
-                answeredByID: user._id,
-                answeredByUser: user.username,
+                answeredByID: auth?.user?._id,
+                answeredByUser: auth?.user?.username,
                 questionID: id,
                 points: question.points / 2,
                 rating: 0,
             };
 
-            const res = await fetch("/api/submitAnswer", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(answerObj),
-            });
+            const { data } = await axios.post(
+                `/api/v1/answers/submit-answer`,
+                answerObj
+            );
 
-            if (res.status !== 200) {
+            if (data?.success === false) {
                 throw new Error("Could not submit answer");
             } else {
                 toast.success("submitted answer successfully", {
@@ -265,7 +218,18 @@ function AnswerQuestion() {
 
             {!answersArr && <h3>No answers yet!</h3>}
 
-            {canAnswer && (
+            {!auth?.user && (
+                <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                        navigate("/login", { state: `/question/${id}` });
+                    }}
+                >
+                    Login to Answer
+                </button>
+            )}
+
+            {auth?.user && canAnswer && (
                 <div className="answer-div">
                     <h2>Add your answer :-</h2>
                     <div className="container editor-div w-75">

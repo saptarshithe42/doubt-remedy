@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 // submit answer
-router.post("/submit-answer/", requireSignIn, submitAnswerController);
+router.post("/submit-answer", requireSignIn, submitAnswerController);
 
 // to delete answer with given ID
 router.delete("/delete-answer/:id", requireSignIn, deleteAnswerController);

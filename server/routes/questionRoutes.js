@@ -7,6 +7,9 @@ import {
     getAskedQuestionsController,
     getAnsweredQuestionsController,
     searchController,
+    checkAskedController,
+    checkAnsweredController,
+    checkAskedOrAnsweredController,
 } from "../controllers/questionController.js";
 
 // router object
@@ -35,6 +38,16 @@ router.get(
 router.get("/search/:word", searchController);
 
 // check if question (id provided) is asked by a particular user
-// router.get("/check-asked-question", checkAskedQuestion)
+router.get("/check-asked/:id", requireSignIn, checkAskedController);
+
+// check if question (id provided) is already answered by a particular user
+router.get("/check-answered/:id", requireSignIn, checkAnsweredController);
+
+// check if question (id provided) is already answered by a particular user
+router.get(
+    "/check-asked-or-answered/:id",
+    requireSignIn,
+    checkAskedOrAnsweredController
+);
 
 export default router;

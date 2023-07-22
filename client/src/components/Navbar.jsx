@@ -14,6 +14,8 @@ function Navbar() {
     // const { state, dispatch } = useContext(UserContext);
     const { auth, setAuth } = UserState();
 
+    const navigate = useNavigate();
+
     const RenderMenu = () => {
         const handleLogout = () => {
             setAuth({
@@ -23,6 +25,8 @@ function Navbar() {
             });
 
             localStorage.removeItem("userInfo");
+
+            navigate("/");
 
             // toast.success("Logout successfully");
         };
