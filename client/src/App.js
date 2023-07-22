@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import Home from "./pages/home/Home";
-import About from "./pages/about/About";
 import Login from "./pages/login/Login";
 import Signup from "./pages/signup/Signup";
 import Logout from "./components/Logout";
@@ -16,18 +15,6 @@ import AnswerQuestion from "./pages/answer_question/AnswerQuestion";
 import AskedQuestions from "./pages/asked_questions/AskedQuestions";
 import AnsweredQuestions from "./pages/answered_questions/AnsweredQuestions";
 
-// function PrivateRoute({ path, ...props }) {
-//     const { auth } = UserState();
-
-//     if (auth?.user) {
-//         // Render the route component if the user is authenticated
-//         return <Route path={path} {...props} />;
-//     } else {
-//         // Redirect to the login page if the user is not authenticated
-//         return <Navigate to="/login" replace />;
-//     }
-// }
-
 const Routing = () => {
     const { auth } = UserState();
 
@@ -36,9 +23,6 @@ const Routing = () => {
             <Route path="/" element={<Home />} />
             <Route path="/search/:query" element={<SearchResults />} />
             <Route path="/question/:id" element={<AnswerQuestion />} />
-            {/* {auth?.user && (
-                <Route path="/my_questions" element={<AskedQuestions />} />
-            )} */}
 
             <Route
                 path="/my_questions"
@@ -57,7 +41,6 @@ const Routing = () => {
                 path="/ask"
                 element={!auth?.user ? <Login /> : <AskQuestion />}
             />
-            {/* <Route path="/ask" element={!user ? <Navigate to="/login" /> : <AskQuestion />} /> */}
             <Route
                 path="/login"
                 element={!auth?.user ? <Login /> : <Navigate to="/" />}
