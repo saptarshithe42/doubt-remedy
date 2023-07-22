@@ -1,252 +1,188 @@
-import React, { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { UserState } from "../../context/AuthContext";
+import axios from "axios";
 
 // styles
 // import 'react-quill/dist/quill.snow.css';
 
 // components
-import QuestionView from "../../components/QuestionView"
+import QuestionView from "../../components/QuestionView";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 // utitlities
 import striptags from "striptags";
 import AnswerView from "../../components/AnswerView";
 
-
 const modules = {
     toolbar: [
-        [{ 'header': [1, 2, 3, 4, 5, 6] }],
+        [{ header: [1, 2, 3, 4, 5, 6] }],
         [{ size: [] }],
-        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-        [{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }],
-        ['image']
+        ["bold", "italic", "underline", "strike", "blockquote"],
+        [
+            { list: "ordered" },
+            { list: "bullet" },
+            { indent: "-1" },
+            { indent: "+1" },
+        ],
+        [
+            { align: "" },
+            { align: "center" },
+            { align: "right" },
+            { align: "justify" },
+        ],
+        ["image"],
     ],
-}
+};
 
 const formats = [
-    'header', 'font', 'size',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'link', 'image', 'align'
-]
-
-
+    "header",
+    "font",
+    "size",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "align",
+];
 
 function AnswerQuestion() {
+    const { id } = useParams();
 
-    const { id } = useParams()
+    const { auth } = UserState();
+    const navigate = useNavigate();
 
-    const { user } = UserState();
-    const navigate = useNavigate()
-
-    const [question, setQuestion] = useState(null)
-    const [canAnswer, setCanAnswer] = useState(true)
-    const [answer, setAnswer] = useState("")
-    const [answersArr, setAnswersArr] = useState(null)
+    const [question, setQuestion] = useState(null);
+    const [canAnswer, setCanAnswer] = useState(true);
+    const [answer, setAnswer] = useState("");
+    const [answersArr, setAnswersArr] = useState(null);
 
     const fetchQuestion = async (id) => {
-
         try {
+            const { data } = await axios.get(
+                `/api/v1/questions/get-question/${id}`
+            );
 
-            const res = await fetch(`/api/question/${id}`)
-
-            if (res.status !== 200) {
-                throw new Error("Could not fetch question");
+            if (data?.success === false) {
+                toast.error("Could not fetch question");
+                return;
             }
 
-            const data = await res.json();
+            const qs = data.question;
 
-            console.log(data);
-
-            setQuestion(data)
+            setQuestion(qs);
 
             // only two answers permitted for a question
-            if (data.answers.length == 2) {
+            if (qs.answers.length === 2) {
                 setCanAnswer(false);
             }
-            
-            if(data.answers.length > 0){
 
-                let arr = []
+            if (qs.answers.length > 0) {
+                let arr = [];
 
-                for(const answerID of data.answers){
-
+                for (const answerID of qs.answers) {
                     let answerObj = await fetchAnswerByID(answerID);
 
                     arr.push(answerObj);
                 }
 
-                console.log(arr);
+                // console.log(arr);
 
                 setAnswersArr(arr);
-
             }
-
-            
-
-
         } catch (err) {
-
             toast.error(err.message, {
-                position: "top-center"
-            })
-
-
-        }
-
-    }
-
-    const fetchAskedQuestions = async () => {
-
-        try {
-
-            const res = await fetch("/api/asked_questions", {
-                method: "GET",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json"
-                },
-                credentials: "include"
+                position: "top-center",
             });
-
-            // console.log(res);
-
-            const data = await res.json();
-
-            console.log(data);
-
-            // user who asked the question cannot answer it
-            if (data.includes(id)) {
-                setCanAnswer(false);
-            }
-
-
-            if (res.status !== 200) {
-                const error = new Error(res.error);
-                throw error;
-            }
-
-            // setIsLoading(false);
-
-        } catch (err) {
-            console.log(err);
-            navigate("/login");
         }
+    };
 
-    }
-
-    const fetchAnsweredQuestions = async () => {
-
+    // check if the question has been asked / answered by the user
+    const askedOrAnsweredByUser = async () => {
         try {
+            const { data } = await axios.get(
+                `/api/v1/questions/check-asked-or-answered/${id}`
+            );
 
-            const res = await fetch("/api/answered_questions", {
-                method: "GET",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json"
-                },
-                credentials: "include"
-            });
+            if (data?.success === false) {
+                toast.error(data?.message);
+                return;
+            }
 
-            // console.log(res);
-
-            const data = await res.json();
-
-            console.log(data);
-
-            // if user already answered the question then cannot answer it again
-            if (data.includes(id)) {
+            // user has asked / answered the question
+            if (data?.status) {
                 setCanAnswer(false);
+            } else {
+                setCanAnswer(true);
             }
-
-
-            if (res.status !== 200) {
-                const error = new Error(res.error);
-                throw error;
-            }
-
-            // setIsLoading(false);
-
-        } catch (err) {
-            console.log(err);
-            navigate("/login");
+        } catch (error) {
+            toast.error("Something went wrong");
         }
-    }
+    };
 
-
+    // fetch answered by ID
     const fetchAnswerByID = async (id) => {
+        try {
+            const { data } = await axios.get(
+                `/api/v1/answers/get-answer/${id}`
+            );
 
-        try{
-
-            const res = await fetch(`/api/answer/${id}`)
-
-            const data = await res.json();
-
-            if(res.status !== 200){
-                throw new Error("Could not fetch answer");
+            if (data?.success === false) {
+                toast.error(data?.message);
+                return null;
             }
-
-            return data;
-
-
-        } catch(err){
-
+            return data?.answer;
+        } catch (err) {
             toast.error(err.message, {
-                position : "top-center"
-            })
-
+                position: "top-center",
+            });
         }
-
-    }
-
+    };
 
     useEffect(() => {
+        fetchQuestion(id);
+    }, []);
 
-        fetchQuestion(id)
-        fetchAskedQuestions()
-        fetchAnsweredQuestions()
-
-    }, [])
-
-
+    useEffect(() => {
+        if (auth?.user) {
+            askedOrAnsweredByUser();
+        }
+    }, [auth?.user]);
 
     const submitAnswer = async () => {
-
         try {
-
             const answerContent = striptags(answer).trim();
 
             if (answerContent.length === 0) {
-                throw new Error("Empty answer.")
+                throw new Error("Empty answer.");
             }
 
             const answerObj = {
                 content: answer,
-                answeredByID: user._id,
-                answeredByUser: user.username,
+                answeredByID: auth?.user?._id,
+                answeredByUser: auth?.user?.username,
                 questionID: id,
-                points: (question.points) / 2,
-                rating : 0
-            }
+                points: question.points / 2,
+                rating: 0,
+            };
 
-            const res = await fetch("/api/submitAnswer", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(answerObj)
-            })
+            const { data } = await axios.post(
+                `/api/v1/answers/submit-answer`,
+                answerObj
+            );
 
-            if (res.status !== 200) {
+            if (data?.success === false) {
                 throw new Error("Could not submit answer");
             } else {
-
-
                 toast.success("submitted answer successfully", {
                     position: "top-right",
                     autoClose: 2000,
@@ -256,21 +192,18 @@ function AnswerQuestion() {
                     draggable: true,
                     progress: undefined,
                     theme: "light",
-                    });
+                });
 
                 setTimeout(() => {
                     window.location.reload(true);
-                }, 4000)
+                }, 4000);
             }
-
-
         } catch (err) {
             toast.error(err.message, {
-                position: "top-center"
-            })
+                position: "top-center",
+            });
         }
-    }
-
+    };
 
     return (
         <div>
@@ -278,16 +211,25 @@ function AnswerQuestion() {
             {/* <h2 style={{ margin: "1rem" }}>Question :-</h2> */}
             {question && <QuestionView question={question} />}
 
-            {answersArr && 
+            {answersArr &&
                 answersArr.map((answer, index) => {
-                    return (<AnswerView answer={answer} key={index} />)
-                })
-            }
+                    return <AnswerView answer={answer} key={index} />;
+                })}
 
             {!answersArr && <h3>No answers yet!</h3>}
 
+            {!auth?.user && (
+                <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                        navigate("/login", { state: `/question/${id}` });
+                    }}
+                >
+                    Login to Answer
+                </button>
+            )}
 
-            {canAnswer &&
+            {auth?.user && canAnswer && (
                 <div className="answer-div">
                     <h2>Add your answer :-</h2>
                     <div className="container editor-div w-75">
@@ -299,22 +241,20 @@ function AnswerQuestion() {
                             formats={formats}
                         />
 
-                        {answer &&
+                        {answer && (
                             <button
                                 className="btn btn-primary"
                                 onClick={submitAnswer}
-                                style={{ margin: "1rem" }}>
+                                style={{ margin: "1rem" }}
+                            >
                                 Submit
                             </button>
-                        }
+                        )}
                     </div>
-
                 </div>
-            }
-
-            
+            )}
         </div>
-    )
+    );
 }
 
-export default AnswerQuestion
+export default AnswerQuestion;
